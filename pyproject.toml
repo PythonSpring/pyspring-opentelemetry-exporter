@@ -1,0 +1,24 @@
+[project]
+name = "pyspring-opentelemetry-exporter"
+version = "0.1.0"
+description = "OpenTelemetry exporter for PySpring"
+authors = [
+    {name = "William Chen", email = "william_w_chen@trendmicro.com"},
+]
+dependencies = [
+    "py-spring-core>=0.0.16", 
+    "opentelemetry-instrumentation-fastapi>=0.55b1", 
+    "opentelemetry-sdk>=1.34.1",
+    "opentelemetry-exporter-otlp-proto-http>=1.34.1"
+]
+requires-python = ">=3.10, <3.13"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
