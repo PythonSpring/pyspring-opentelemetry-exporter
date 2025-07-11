@@ -11,6 +11,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
 from pyspring_opentelemetry_exporter._request_hook_handler import RequestHookHandler, provide_default_request_hook_handler
+from pyspring_opentelemetry_exporter._response_trace_middleware import ResponseTraceMiddleware
 
 class TracerExporterProperties(Properties):
     __key__ = "tracer_exporter"
@@ -43,6 +44,7 @@ class PySpringOpenTelemetryExporter(EntityProvider, ApplicationContextRequired):
         if self.__class__._handler is None:
             self.__class__._handler = provide_default_request_hook_handler()
         trace.set_tracer_provider(provider)
+        app_context.server.add_middleware(ResponseTraceMiddleware)
         self.inject_instrumentation(app_context.server, self.__class__._handler)
 
 
