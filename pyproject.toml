@@ -22,3 +22,4 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+version = { source = "file", path = "pyspring_opentelemetry_exporter/__init__.py" }

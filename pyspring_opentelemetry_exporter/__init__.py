@@ -6,3 +6,5 @@ __all__ = [
     "RequestHookHandler", 
     "provide_default_request_hook_handler"
 ]
+
+__version__ = "0.0.1"
