@@ -1,7 +1,7 @@
 
-
+import py_spring_core.core.utils as framework_utils
 from py_spring_core import ApplicationContextRequired, EntityProvider, Properties
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, Type
 from fastapi import FastAPI
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry import trace
@@ -26,8 +26,12 @@ class PySpringOpenTelemetryExporter(EntityProvider, ApplicationContextRequired):
         props = app_context.get_properties(TracerExporterProperties)
         assert props is not None
         return props
-
     
+    def _check_unimplemented_methods_for_handler(self, handler: Type[RequestHookHandler]) -> None:
+        unimplemented_methods = framework_utils.get_unimplemented_abstract_methods(handler)
+        if unimplemented_methods:
+            raise NotImplementedError(f"Handler {handler.__name__} must implement the following methods: {unimplemented_methods}")
+
     def provider_init(self) -> None:
         app_context = self.get_application_context()
         tracer_properties = self._get_tracer_properties()
@@ -43,6 +47,8 @@ class PySpringOpenTelemetryExporter(EntityProvider, ApplicationContextRequired):
 
         if self.__class__._handler is None:
             self.__class__._handler = provide_default_request_hook_handler()
+        self._check_unimplemented_methods_for_handler(self.__class__._handler.__class__)
+
         trace.set_tracer_provider(provider)
         app_context.server.add_middleware(ResponseTraceMiddleware)
         self.inject_instrumentation(app_context.server, self.__class__._handler)

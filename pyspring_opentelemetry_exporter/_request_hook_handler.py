@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional
 from fastapi import Request, Response
 from opentelemetry.trace.span import Span
+import py_spring_core.core.utils as framework_utils
 
 class RequestHookHandler(ABC):
     @abstractmethod
@@ -9,6 +10,9 @@ class RequestHookHandler(ABC):
 
     @abstractmethod
     def client_request_hook(self, span: Span, scope: dict[str, Any], request: dict[str, Any]) -> None: ...
+
+    @abstractmethod
+    def server_response_hook(self, span: Span, scope: dict[str, Any], response: dict[str, Any]) -> None: ...
 
     @abstractmethod
     def client_response_hook(self, span: Span, scope: dict[str, Any], response: dict[str, Any]) -> None: ...
@@ -51,4 +55,7 @@ class DefaultRequestHookHandler(RequestHookHandler):
                 span.set_attribute("error.preview", error)
 
 def provide_default_request_hook_handler() -> RequestHookHandler:
+    unimplemented_methods = framework_utils.get_unimplemented_abstract_methods(DefaultRequestHookHandler)
+    if unimplemented_methods:
+        raise NotImplementedError(f"DefaultRequestHookHandler must implement the following methods: {unimplemented_methods}")
     return DefaultRequestHookHandler()
