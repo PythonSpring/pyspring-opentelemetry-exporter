@@ -1,13 +1,18 @@
+from py_spring_core import Middleware
+
 import traceback
 from typing import Awaitable, Callable
 from fastapi import Request
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 from starlette.middleware.base import _StreamingResponse
 from opentelemetry.trace import get_current_span
 
 
-class ResponseTraceMiddleware(BaseHTTPMiddleware):
+class ResponseTraceMiddleware(Middleware):
+
+    async def process_request(self, request: Request) -> Response | None:
+        return None
+
     async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         try:
             response = await call_next(request)
